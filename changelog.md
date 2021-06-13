@@ -1,3 +1,7 @@
+0.0.1.1 2021-06-13
+==================
+- add tests for MapUtils (from fluffy)
+
 0.0.1.0 2021-06-12
 ==================
 - add MapUtils.hs (also from fluffy)
