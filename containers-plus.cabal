@@ -3,7 +3,7 @@ name:                containers-plus
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.2.0
+version:             0.0.3.0
 synopsis:            Additional Utilities for Working with Containers
 description:         Additional Utilities for Working with Containers
 cabal-version:       >= 1.10
@@ -14,9 +14,11 @@ maintainer:          haskell@sixears.com
 build-type:          Simple
 library
   ghc-options:        -O2 -W -Wall -fhelpful-errors
-  exposed-modules:    ContainersPlus.Map
+  exposed-modules:    ContainersPlus.Insert, ContainersPlus.T.Insert
+                    , ContainersPlus.Map
                     , ContainersPlus.MapUtils, ContainersPlus.T.MapUtils
                     , ContainersPlus.Member
+                    , T.ContainersPlus
   other-modules:
   default-extensions: FlexibleContexts
                     , LambdaCase

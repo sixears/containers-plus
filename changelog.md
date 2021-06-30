@@ -1,6 +1,10 @@
+0.0.3.0 2021-06-29
+==================
+- add ContainersPlus.Insert
+
 0.0.2.0 2021-06-15
 ==================
-- add ContainerPlus.Member
+- add ContainersPlus.Member
 
 0.0.1.1 2021-06-13
 ==================
