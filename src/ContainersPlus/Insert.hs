@@ -1,6 +1,6 @@
 {- | Containers that have an `insert` function. -}
 module ContainersPlus.Insert
-  ( HasInsert( InsertType, (<+), (+>), insert ) )
+  ( HasInsert( InsertType, (<+), (+>), (⨭), (⨮), (&>), (<&), insert ) )
 where
 
 -- base --------------------------------
@@ -25,6 +25,14 @@ import Data.Set  ( Set )
 
 import Data.Hashable  ( Hashable )
 
+-- lens --------------------------------
+
+import Control.Lens.Setter ( ASetter )
+
+-- more-unicode ------------------------
+
+import Data.MoreUnicode.Lens  ( (⊧) )
+
 -- unordered-containers ----------------
 
 import qualified Data.HashMap.Strict
@@ -41,6 +49,14 @@ class HasInsert α where
   (+>) = insert
   (<+) ∷ α → InsertType α → α
   (<+) = flip insert
+  (&>) ∷ ASetter β γ α α → InsertType α → β → γ
+  (&>) x v = (x ⊧ (v +>))
+  (⨮) ∷ ASetter β γ α α → InsertType α → β → γ
+  (⨮) = (&>)
+  (<&) ∷ ASetter β γ α α → InsertType α → β → γ
+  (<&) x v = (x ⊧ (<+ v))
+  (⨭) ∷ ASetter β γ α α → InsertType α → β → γ
+  (⨭) = (<&)
 
 --------------------
 
@@ -73,5 +89,7 @@ instance (Eq α, Hashable α) ⇒ HasInsert (HashSet α) where
 instance (Eq α, Hashable α) ⇒ HasInsert (Data.HashMap.Strict.HashMap α β) where
   type InsertType (Data.HashMap.Strict.HashMap α β) = (α,β)
   insert (a,b) = Data.HashMap.Strict.insert a b
+
+
 
 -- that's all, folks! ----------------------------------------------------------

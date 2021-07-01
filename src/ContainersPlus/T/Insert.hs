@@ -8,7 +8,7 @@ where
 
 -- base --------------------------------
 
-import Data.Function  ( ($) )
+import Data.Function  ( ($), (&), id )
 import Data.Int       ( Int )
 import Data.String    ( String )
 import GHC.Exts       ( fromList )
@@ -48,7 +48,7 @@ import Data.HashSet         ( HashSet )
 --                     local imports                      --
 ------------------------------------------------------------
 
-import ContainersPlus.Insert  ( (+>), (<+) )
+import ContainersPlus.Insert  ( (+>), (<+), (⨭), (⨮), (&>), (<&) )
 
 -------------------------------------------------------------------------------
 
@@ -94,11 +94,16 @@ hashMapSixSeven = fromList [('k',6),('d',7)]
 ----------------------------------------
 
 listTests ∷ TestTree
-listTests = testGroup "[a]" [ testCase "7 +> []" $ [7] @=? seven +> ф
-                            , testCase "[] <+ 7" $ [7] @=? ф <+ seven
-                            , testCase "7 +> [6]" $ [7,6] @=? seven +> [6]
-                            , testCase "[6] <+ 7" $ [6,7] @=? [6] <+ seven
-                            ]
+listTests =
+  testGroup "[a]" [ testCase "7 +> []" $ [7] @=? seven +> ф
+                  , testCase "[] <+ 7" $ [7] @=? ф <+ seven
+                  , testCase "7 +> [6]" $ [7,6] @=? seven +> [6]
+                  , testCase "[6] <+ 7" $ [6,7] @=? [6] <+ seven
+                  , testCase "[6] &> 7" $ [7,6] @=? ([6] & id &> seven)
+                  , testCase "[6] ⨮ 7" $ [7,6] @=? ([6] & id ⨮ seven)
+                  , testCase "[6] <& 7" $ [6,7] @=? ([6] & id ⨭ seven)
+                  , testCase "[6] ⨭ 7" $ [6,7] @=? ([6] & id <& seven)
+                  ]
 
 ----------------------------------------
 
@@ -109,42 +114,62 @@ setTests =
              , testCase "[] <+ 7" $ setSeven @=? ф <+ seven
              , testCase "7 +> [6]" $ setSixSeven @=? seven +> setSix
              , testCase "[6] <+ 7" $ setSixSeven @=? setSix <+ seven
+             , testCase "[6] &> 7" $ setSixSeven @=? (setSix & id &> seven)
+             , testCase "[6] ⨮ 7" $ setSixSeven @=? (setSix & id ⨮ seven)
+             , testCase "[6] <& 7" $ setSixSeven @=? (setSix & id ⨭ seven)
+             , testCase "[6] ⨭ 7" $ setSixSeven @=? (setSix & id <& seven)
              ]
 
 ----------------------------------------
 
 mapTests ∷ TestTree
 mapTests =
-  testGroup "Map a"
-             [ testCase "7 +> []" $ mapSeven @=? ('d',seven) +> ф
-             , testCase "[] <+ 7" $ mapSeven @=? ф <+ ('d',seven)
-             , testCase "7 +> [6]" $ mapSixSeven @=? ('d',seven) +> mapSix
-             , testCase "[6] <+ 7" $ mapSixSeven @=? mapSix <+ ('d',seven)
-             ]
+  let d7 = ('d',seven)
+   in testGroup "Map a"
+                [ testCase "7 +> []" $ mapSeven @=? d7 +> ф
+                , testCase "[] <+ 7" $ mapSeven @=? ф <+ d7
+                , testCase "7 +> [6]" $ mapSixSeven @=? d7 +> mapSix
+                , testCase "[6] <+ 7" $ mapSixSeven @=? mapSix <+ d7
+                , testCase "[6] &> 7" $ mapSixSeven @=? (mapSix & id &> d7)
+                , testCase "[6] ⨮ 7" $ mapSixSeven @=? (mapSix & id ⨮ d7)
+                , testCase "[6] <& 7" $ mapSixSeven @=? (mapSix & id ⨭ d7)
+                , testCase "[6] ⨭ 7" $ mapSixSeven @=? (mapSix & id <& d7)
+                ]
 
 ----------------------------------------
 
 hashSetTests ∷ TestTree
 hashSetTests =
-  testGroup "HashSet a"
-             [ testCase "7 +> []" $ hashSetSeven @=? seven +> ф
-             , testCase "[] <+ 7" $ hashSetSeven @=? ф <+ seven
-             , testCase "7 +> [6]" $ hashSetSixSeven @=? seven +> hashSetSix
-             , testCase "[6] <+ 7" $ hashSetSixSeven @=? hashSetSix <+ seven
-             ]
+  testGroup
+    "HashSet a"
+    [ testCase "7 +> []" $ hashSetSeven @=? seven +> ф
+    , testCase "[] <+ 7" $ hashSetSeven @=? ф <+ seven
+    , testCase "7 +> [6]" $ hashSetSixSeven @=? seven +> hashSetSix
+    , testCase "[6] <+ 7" $ hashSetSixSeven @=? hashSetSix <+ seven
+    , testCase "[6] &> 7" $ hashSetSixSeven @=? (hashSetSix & id &> seven)
+    , testCase "[6] ⨮ 7" $ hashSetSixSeven @=? (hashSetSix & id ⨮ seven)
+    , testCase "[6] <& 7" $ hashSetSixSeven @=? (hashSetSix & id ⨭ seven)
+    , testCase "[6] ⨭ 7" $ hashSetSixSeven @=? (hashSetSix & id <& seven)
+    ]
 
 ----------------------------------------
 
 hashMapTests ∷ TestTree
 hashMapTests =
-  testGroup "HashMap a"
-             [ testCase "7 +> []" $ hashMapSeven @=? ('d',seven) +> ф
-             , testCase "[] <+ 7" $ hashMapSeven @=? ф <+ ('d',seven)
-             , testCase "7 +> [6]" $
-                 hashMapSixSeven @=? ('d',seven) +> hashMapSix
-             , testCase "[6] <+ 7" $
-                 hashMapSixSeven @=? hashMapSix <+ ('d',seven)
-             ]
+  let d7 = ('d',seven)
+   in testGroup
+        "HashMap a"
+        [ testCase "7 +> []" $ hashMapSeven @=? d7 +> ф
+        , testCase "[] <+ 7" $ hashMapSeven @=? ф <+ d7
+        , testCase "7 +> [6]" $
+            hashMapSixSeven @=? d7 +> hashMapSix
+        , testCase "[6] <+ 7" $
+            hashMapSixSeven @=? hashMapSix <+ d7
+        , testCase "[6] &> 7" $ hashMapSixSeven @=? (hashMapSix & id &> d7)
+        , testCase "[6] ⨮ 7" $ hashMapSixSeven @=? (hashMapSix & id ⨮ d7)
+        , testCase "[6] <& 7" $ hashMapSixSeven @=? (hashMapSix & id ⨭ d7)
+        , testCase "[6] ⨭ 7" $ hashMapSixSeven @=? (hashMapSix & id <& d7)
+        ]
 
 ------------------------------------------------------------
 
