@@ -37,8 +37,9 @@ import Data.Hashable  ( Hashable )
 
 -- lens --------------------------------
 
-import Control.Lens.Lens   ( lens )
-import Control.Lens.Prism  ( Prism' )
+import Control.Lens.Lens    ( lens )
+import Control.Lens.Prism   ( Prism' )
+import Control.Lens.Review  ( (#) )
 
 -- mono-traversable --------------------
 
@@ -98,11 +99,20 @@ repeatedKeyError xs = RepeatedKeyError xs callStack
 
 ----------------------------------------
 
-class AsRepeatedKeyError ε α where
+class AsRepeatedKeyError α ε where
   _RepeatedKeyError ∷ Prism' ε (RepeatedKeyError α)
 
-instance AsRepeatedKeyError (RepeatedKeyError α) α where
+instance AsRepeatedKeyError α (RepeatedKeyError α) where
   _RepeatedKeyError = id
+
+----------
+
+asRepeatedKeyError ∷ (AsRepeatedKeyError α ε, HasCallStack) ⇒ [α] → ε
+asRepeatedKeyError = (_RepeatedKeyError #) ∘ repeatedKeyError
+
+throwAsRepeatedKeyError ∷ (AsRepeatedKeyError α ε,HasCallStack,MonadError ε η) ⇒
+                          [α] → η ω
+throwAsRepeatedKeyError = throwError ∘ asRepeatedKeyError
 
 ------------------------------------------------------------
 
@@ -120,17 +130,23 @@ repeated = repeatedBy (>1)
 {-| Like `HashMap.fromList`, but throws a RepeatedKeyError if any key is
      duplicated in the incoming list
  -}
-fromList ∷ (Hashable κ, Eq κ, MonadError (RepeatedKeyError κ) η,
+fromList ∷ ∀ ε σ κ υ η .
+           (Hashable κ, Eq κ, AsRepeatedKeyError κ ε, MonadError ε η,
             ContainerKey σ ~ κ, MapValue σ ~ υ, IsMap σ) ⇒
            [(κ,υ)] → η σ
 fromList kvs = case repeated $ fst ⊳ kvs of
                   []   → return $ mapFromList kvs
-                  dups → throwError $ repeatedKeyError dups
+                  dups → throwAsRepeatedKeyError dups
+
+_fromList ∷ ∀ σ κ υ η .
+            (Hashable κ, Eq κ, MonadError (RepeatedKeyError κ) η,
+            ContainerKey σ ~ κ, MapValue σ ~ υ, IsMap σ) ⇒ [(κ,υ)] → η σ
+_fromList = fromList
 
 {-| `fromList`, but uses `error` in case of duplicate keys -}
 __fromList ∷ (Hashable κ, Printable κ,
               ContainerKey σ ~ κ, MapValue σ ~ υ, IsMap σ) ⇒
              [(κ,υ)] → σ
-__fromList = either __ERR__ id ∘ fromList
+__fromList = either __ERR__ id ∘ _fromList
 
 -- that's all, folks! ----------------------------------------------------------

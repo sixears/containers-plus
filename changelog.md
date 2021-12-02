@@ -1,3 +1,7 @@
+0.0.6.0 2021-12-02
+==================
+- fromList uses AsRepeatedKeyError
+
 0.0.5.0 2021-12-02
 ==================
 - add AsRepeatedKeyError, HasCallStack to RepeatedKeyError

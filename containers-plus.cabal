@@ -3,7 +3,7 @@ name:                containers-plus
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.5.0
+version:             0.0.6.0
 synopsis:            Additional Utilities for Working with Containers
 description:         Additional Utilities for Working with Containers
 cabal-version:       >= 1.10
@@ -27,6 +27,7 @@ library
                     , NoImplicitPrelude
                     , OverloadedStrings
                     , QuasiQuotes
+                    , RankNTypes
                     , TypeFamilies
                     , UnicodeSyntax
 
