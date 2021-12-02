@@ -1,3 +1,7 @@
+0.0.5.0 2021-12-02
+==================
+- add AsRepeatedKeyError, HasCallStack to RepeatedKeyError
+
 0.0.4.0 2021-06-30
 ==================
 - add (<+), (+>), (⨭), (⨮) to Insert

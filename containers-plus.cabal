@@ -3,7 +3,7 @@ name:                containers-plus
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.4.0
+version:             0.0.5.0
 synopsis:            Additional Utilities for Working with Containers
 description:         Additional Utilities for Working with Containers
 cabal-version:       >= 1.10
@@ -21,7 +21,9 @@ library
                     , T.ContainersPlus
   other-modules:
   default-extensions: FlexibleContexts
+                    , FlexibleInstances
                     , LambdaCase
+                    , MultiParamTypeClasses
                     , NoImplicitPrelude
                     , OverloadedStrings
                     , QuasiQuotes
@@ -32,9 +34,10 @@ library
                     , hashable, lens, mono-traversable, mtl, tasty, tasty-hunit
                     , text-printer, unordered-containers
 
-                    , more-unicode         >= 0.0.15.0
-                    , non-empty-containers >= 1.4.1.0
-                    , tasty-plus           >= 1.5.0.1
+                    , has-callstack        >= 1.0.1.0
+                    , more-unicode         >= 0.0.16.0
+                    , non-empty-containers >= 1.4.2.0
+                    , tasty-plus           >= 1.5.1.0
                     , textual-plus         >= 1.0.2.0
                     , tfmt                 >= 0.2.4.0
 

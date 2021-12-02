@@ -1,5 +1,6 @@
 module ContainersPlus.Map
-  ( fromList, __fromList )
+  ( AsRepeatedKeyError(..), RepeatedKeyError
+  , fromList, __fromList, repeatedKeyError )
 where
 
 import Prelude  ( (+) )
@@ -9,23 +10,35 @@ import Prelude  ( (+) )
 import Control.Monad  ( return )
 import Data.Bool      ( Bool )
 import Data.Either    ( either )
-import Data.Eq        ( Eq )
+import Data.Eq        ( Eq( (==) ) )
 import Data.Function  ( ($), flip, id )
 import Data.List      ( repeat, zip )
 import Data.Ord       ( Ord( (>) ) )
 import Data.Tuple     ( fst )
+import GHC.Stack      ( CallStack, HasCallStack, callStack )
+import Text.Show      ( Show )
 
 -- base-unicode-symbols ----------------
 
+import Data.Eq.Unicode        ( (≡) )
 import Data.Function.Unicode  ( (∘) )
 
 -- data-textual ------------------------
 
 import Data.Textual  ( Printable( print ) )
 
+-- has-callstack -----------------------
+
+import HasCallstack  ( HasCallstack( callstack ) )
+
 -- hashable ----------------------------
 
 import Data.Hashable  ( Hashable )
+
+-- lens --------------------------------
+
+import Control.Lens.Lens   ( lens )
+import Control.Lens.Prism  ( Prism' )
 
 -- mono-traversable --------------------
 
@@ -59,10 +72,37 @@ import Data.HashMap.Strict  ( HashMap )
 
 --------------------------------------------------------------------------------
 
-newtype RepeatedKeyError α = RepeatedKeyError [α]
+data RepeatedKeyError α = RepeatedKeyError [α] CallStack
+  deriving Show
+
+----------
+
+instance Eq α ⇒ Eq (RepeatedKeyError α) where
+  RepeatedKeyError a _ == RepeatedKeyError b _ = a ≡ b
+
+----------
+
+instance HasCallstack (RepeatedKeyError α) where
+  callstack = lens (\ (RepeatedKeyError _ cs) → cs)
+                   (\ (RepeatedKeyError xs _) cs → RepeatedKeyError xs cs)
+
+----------
 
 instance Printable α ⇒ Printable (RepeatedKeyError α) where
-  print (RepeatedKeyError ks) = P.text $ [fmt|repeated keys [%L]|] (q ⊳ ks)
+  print (RepeatedKeyError ks _) = P.text $ [fmt|repeated keys [%L]|] (q ⊳ ks)
+
+----------
+
+repeatedKeyError ∷ HasCallStack ⇒ [α] → RepeatedKeyError α
+repeatedKeyError xs = RepeatedKeyError xs callStack
+
+----------------------------------------
+
+class AsRepeatedKeyError ε α where
+  _RepeatedKeyError ∷ Prism' ε (RepeatedKeyError α)
+
+instance AsRepeatedKeyError (RepeatedKeyError α) α where
+  _RepeatedKeyError = id
 
 ------------------------------------------------------------
 
@@ -85,7 +125,7 @@ fromList ∷ (Hashable κ, Eq κ, MonadError (RepeatedKeyError κ) η,
            [(κ,υ)] → η σ
 fromList kvs = case repeated $ fst ⊳ kvs of
                   []   → return $ mapFromList kvs
-                  dups → throwError $ RepeatedKeyError dups
+                  dups → throwError $ repeatedKeyError dups
 
 {-| `fromList`, but uses `error` in case of duplicate keys -}
 __fromList ∷ (Hashable κ, Printable κ,
