@@ -3,56 +3,16 @@ module ContainersPlus.Map
   , fromList, __fromList, repeatedKeyError )
 where
 
-import Prelude  ( (+) )
+import Base1  hiding  ( fromList )
 
 -- base --------------------------------
 
-import Control.Monad  ( return )
-import Data.Bool      ( Bool )
-import Data.Either    ( either )
-import Data.Eq        ( Eq( (==) ) )
-import Data.Function  ( ($), flip, id )
+import Data.Function  ( flip )
 import Data.List      ( repeat, zip )
-import Data.Ord       ( Ord( (>) ) )
-import Data.Tuple     ( fst )
-import GHC.Stack      ( CallStack, HasCallStack, callStack )
-import Text.Show      ( Show )
-
--- base-unicode-symbols ----------------
-
-import Data.Eq.Unicode        ( (≡) )
-import Data.Function.Unicode  ( (∘) )
-
--- data-textual ------------------------
-
-import Data.Textual  ( Printable( print ) )
-
--- has-callstack -----------------------
-
-import HasCallstack  ( HasCallstack( callstack ) )
-
--- hashable ----------------------------
-
-import Data.Hashable  ( Hashable )
-
--- lens --------------------------------
-
-import Control.Lens.Lens    ( lens )
-import Control.Lens.Prism   ( Prism' )
-import Control.Lens.Review  ( (#) )
 
 -- mono-traversable --------------------
 
 import Data.Containers  ( ContainerKey, IsMap, MapValue, mapFromList )
-
--- more-unicode ------------------------
-
-import Data.MoreUnicode.Functor  ( (⊳) )
-import Data.MoreUnicode.Natural  ( ℕ )
-
--- mtl ---------------------------------
-
-import Control.Monad.Except  ( MonadError, throwError )
 
 -- text-printer ------------------------
 
@@ -61,10 +21,6 @@ import qualified  Text.Printer  as  P
 -- textual-plus ------------------------
 
 import TextualPlus  ( __ERR__, q )
-
--- tfmt --------------------------------
-
-import Text.Fmt  ( fmt )
 
 -- unordered-containers ----------------
 
@@ -75,6 +31,10 @@ import Data.HashMap.Strict  ( HashMap )
 
 data RepeatedKeyError α = RepeatedKeyError [α] CallStack
   deriving Show
+
+----------
+
+instance (Typeable α, Show α) ⇒ Exception (RepeatedKeyError α)
 
 ----------
 
@@ -121,7 +81,7 @@ throwAsRepeatedKeyError = throwError ∘ asRepeatedKeyError
 countMap :: (Hashable κ, Eq κ) ⇒ [κ] → HashMap κ ℕ
 countMap = HashMap.fromListWith (+) ∘ flip zip (repeat 1)
 
-repeatedBy ∷ (Hashable κ, Eq κ) ⇒ (ℕ → Bool) → [κ] → [κ]
+repeatedBy ∷ (Hashable κ, Eq κ) ⇒ (ℕ → 𝔹) → [κ] → [κ]
 repeatedBy p = HashMap.keys ∘ HashMap.filter p ∘ countMap
 
 repeated ∷ (Hashable α, Eq α) ⇒ [α] → [α]

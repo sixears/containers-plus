@@ -1,3 +1,8 @@
+0.0.7.0 2022-01-06
+==================
+- add AsMapDupKeyError; make Exception,Printable,HasCallstack instances of MapDupKeyError
+- add Exception instance of RepeatedKeyError
+
 0.0.6.0 2021-12-02
 ==================
 - fromList uses AsRepeatedKeyError

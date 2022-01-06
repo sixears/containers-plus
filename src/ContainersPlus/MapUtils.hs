@@ -16,55 +16,74 @@ module ContainersPlus.MapUtils
   )
 where
 
+import Base1
+
 -- base --------------------------------
 
-import Control.Applicative  ( pure )
-import Control.Monad        ( return )
-import Data.Bifunctor       ( second )
-import Data.Either          ( Either( Right, Left ) )
-import Data.Eq              ( Eq )
-import Data.Foldable        ( Foldable, concat )
-import Data.Function        ( ($) )
-import Data.Functor         ( Functor, (<$>) )
-import Data.List.NonEmpty   ( NonEmpty( (:|) ) )
-import Data.Monoid          ( (<>) )
-import Data.Ord             ( Ord )
-import Data.Tuple           ( swap )
-import GHC.Exts             ( IsList( toList ), Item )
-import Text.Show            ( Show )
+import qualified  GHC.Exts  as  IsList
+
+import Data.Foldable  ( Foldable, concat )
+import Data.Functor   ( Functor )
+import Data.Tuple     ( swap )
 
 -- containers --------------------------
 
+import qualified  Data.Map  as  Map
 import Data.Map  ( Map, fromListWith, mapEither, null )
 
--- hashable ----------------------------
+-- text-printer ------------------------
 
-import Data.Hashable  ( Hashable )
-
--- mtl ---------------------------------
-
-import Control.Monad.Except  ( MonadError, throwError )
+import qualified  Text.Printer  as  P
 
 ------------------------------------------------------------
 --                     local imports                      --
 ------------------------------------------------------------
 
-import NonEmptyContainers.NonEmptyHashSet ( NonEmptyHashSet
-                                          , fromList, singleton )
+import qualified  NonEmptyContainers.NonEmptyHashSet  as  NonEmptyHashSet
+import NonEmptyContainers.NonEmptyHashSet ( NonEmptyHashSet )
 
 -------------------------------------------------------------------------------
 
 -- I'd really like to make the type of the NonEmptyHashSet imply that it must
 -- be of size 2 or more.  A job for another day.
 
-data MapDupKeyError k v = MapDupKeyError (Map k (NonEmptyHashSet v))
-  deriving (Eq, Show)
+data MapDupKeyError κ ν = MapDupKeyError (Map κ (NonEmptyHashSet ν)) CallStack
+  deriving Show
+
+instance (Typeable κ, Typeable ν, Show κ, Show ν) ⇒
+         Exception (MapDupKeyError κ ν)
+
+instance (Eq κ, Eq ν) ⇒ Eq (MapDupKeyError κ ν) where
+  MapDupKeyError m _ == MapDupKeyError m' _ = m == m'
+
+----------
+
+instance (Printable κ, Printable ν) ⇒ Printable (MapDupKeyError κ ν) where
+  print (MapDupKeyError m _) =
+    let xs ∷ [𝕋]
+        xs =  [ [fmt|'%T' ⇒ %T|] k v | (k,v) ← Map.toList m]
+     in P.text $ [fmt|duplicate keys: {%L}|] xs
+
+----------
+
+instance HasCallstack (MapDupKeyError κ ν) where
+  callstack = lens (\ (MapDupKeyError _ cs) → cs)
+                   (\ (MapDupKeyError m _) cs → (MapDupKeyError m cs))
 
 ------------------------------------------------------------
 
-mapFromList :: (Ord k, Hashable v, Eq v, IsList l, Item l ~ (k,v)) =>
-             l -> Map k (NonEmptyHashSet v)
-mapFromList kvs = fromListWith (<>) (second singleton <$> toList kvs)
+class AsMapDupKeyError κ ν ε where
+  _MapDupKeyError ∷ Prism' ε (MapDupKeyError κ ν)
+
+instance AsMapDupKeyError κ ν (MapDupKeyError κ ν) where
+  _MapDupKeyError = id
+
+------------------------------------------------------------
+
+mapFromList ∷ (Ord κ, Hashable ν, Eq ν, IsList l, Item l ~ (κ,ν)) ⇒
+              l → Map κ (NonEmptyHashSet ν)
+mapFromList kvs =
+  fromListWith (◇) (second NonEmptyHashSet.singleton ⊳ IsList.toList kvs)
 
 ----------------------------------------
 
@@ -73,11 +92,11 @@ mapFromList kvs = fromListWith (<>) (second singleton <$> toList kvs)
 --   The lists have disjoint keys - the 'normal' list contains only those keys
 --   that don't have duplicate values.
 
-fromListWithDups :: (Ord k, Eq v, Hashable v, IsList l, Item l ~ (k,v)) =>
-                    l -> (Map k (NonEmptyHashSet v), Map k v)
+fromListWithDups ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (κ,ν)) ⇒
+                    l → (Map κ (NonEmptyHashSet ν), Map κ ν)
 fromListWithDups ls =
-  let map = fromListWith (<>) (second pure <$> toList ls)
-   in mapEither ( \ case (v :| []) -> Right v; vs -> Left (fromList vs) )
+  let map = fromListWith (◇) (second pure ⊳ IsList.toList ls)
+   in mapEither ( \ case (v :| []) → 𝕽 v; vs → 𝕷 (NonEmptyHashSet.fromList vs) )
                 map
 
 ----------------------------------------
@@ -86,42 +105,41 @@ fromListWithDups ls =
 --   dups, this one returns the 'normal' list if there are no dups; else throws
 --   the duplist
 
-fromListDupsE :: (Ord k, Eq v, Hashable v, IsList l, Item l ~ (k,v),
-                  MonadError (MapDupKeyError k v) m) =>
-                 l -> m (Map k v)
+fromListDupsE ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (κ,ν),
+                 MonadError (MapDupKeyError κ ν) m, HasCallStack) ⇒
+                 l → m (Map κ ν)
 fromListDupsE ls =
   let (dups, res) = fromListWithDups ls
    in if null dups
       then return res
-      else throwError $ MapDupKeyError dups
+      else throwError $ MapDupKeyError dups callStack
 
 ----------------------------------------
 
--- | invert a map, that is, Map v k -> Map k v; throw an error if duplicate
---   k values are found
+-- | invert a map, that is, Map ν κ → Map κ ν; throw an error if duplicate
+--   κ values are found
 
-invertMap :: (Ord k, Eq v, Hashable v, IsList l, Item l ~ (v,k),
-              MonadError (MapDupKeyError k v) m) =>
-             l -> m (Map k v)
-invertMap m = fromListDupsE (swap <$> toList m)
-
-----------------------------------------
-
--- | invert a map which is a map to a list of values, that is,
---   Map v [k] -> Map k v; throw an error if duplicate k values are found
-
-invertMapS :: (Ord k, Eq v, Hashable v, IsList l, Item l ~ (v,[k]),
-               MonadError (MapDupKeyError k v) m) =>
-              l -> m (Map k v)
-invertMapS m = fromListDupsE $ [ (v,k) | (k,vs) <- toList m, v <- vs ]
+invertMap ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (ν,κ),
+             MonadError (MapDupKeyError κ ν) m) ⇒
+            l → m (Map κ ν)
+invertMap m = fromListDupsE (swap ⊳ IsList.toList m)
 
 ----------------------------------------
 
--- | merge a list of maps, throw if any key is duplicated
+{- | invert a map which is a map to a list of values, that is,
+     `Map ν [κ] → Map κ ν`; throw an error if duplicate κ values are found -}
 
-mergeMaps :: (Ord k, Eq v, Hashable v, MonadError (MapDupKeyError k v) m,
-              Foldable t, Functor t) =>
-             t (Map k v) -> m (Map k v)
-mergeMaps maps = fromListDupsE (concat $ toList <$> maps)
+invertMapS ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (ν,[κ]),
+              MonadError (MapDupKeyError κ ν) m) ⇒
+             l → m (Map κ ν)
+invertMapS m = fromListDupsE $ [ (v,k) | (k,vs) ← IsList.toList m, v ← vs ]
+
+----------------------------------------
+
+{- | merge a list of maps, throw if any key is duplicated -}
+mergeMaps ∷ (Ord κ, Eq ν, Hashable ν, MonadError (MapDupKeyError κ ν) η,
+             Foldable t, Functor t) ⇒
+            t (Map κ ν) → η (Map κ ν)
+mergeMaps maps = fromListDupsE (concat $ IsList.toList ⊳ maps)
 
 -- that's all, folks! ---------------------------------------------------------
