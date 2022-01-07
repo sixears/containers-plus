@@ -10,7 +10,7 @@ Description: utilities for working with Maps, with explicit (Monad)Errors
 -}
 
 module ContainersPlus.MapUtils
-  ( MapDupKeyError( MapDupKeyError )
+  ( AsMapDupKeyError(..), MapDupKeyError( MapDupKeyError )
   , fromListWithDups, fromListDupsE, invertMap, invertMapS, mapFromList
   , mergeMaps
   )
@@ -47,6 +47,7 @@ import NonEmptyContainers.NonEmptyHashSet ( NonEmptyHashSet )
 -- I'd really like to make the type of the NonEmptyHashSet imply that it must
 -- be of size 2 or more.  A job for another day.
 
+{- | attempt was made to build a `Map` with one or more keys duplicated -}
 data MapDupKeyError κ ν = MapDupKeyError (Map κ (NonEmptyHashSet ν)) CallStack
   deriving Show
 
@@ -72,6 +73,7 @@ instance HasCallstack (MapDupKeyError κ ν) where
 
 ------------------------------------------------------------
 
+{- prismatic type class for `MapDupKeyError` -}
 class AsMapDupKeyError κ ν ε where
   _MapDupKeyError ∷ Prism' ε (MapDupKeyError κ ν)
 

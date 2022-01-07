@@ -1,3 +1,7 @@
+0.0.8.0 2022-01-07
+==================
+- export AsMapDupKeyError
+
 0.0.7.0 2022-01-06
 ==================
 - add AsMapDupKeyError; make Exception,Printable,HasCallstack instances of MapDupKeyError
