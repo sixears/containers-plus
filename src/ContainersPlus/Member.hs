@@ -39,6 +39,7 @@ import Data.HashSet  ( HashSet )
 
 --------------------------------------------------------------------------------
 
+{-| type class for data types that have a notion of 'membership' -}
 class HasMember α where
   type MemberType α
   member ∷  MemberType α → α → 𝔹

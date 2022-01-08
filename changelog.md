@@ -1,3 +1,7 @@
+0.0.9.0 2022-01-08
+==================
+- add throwAsMapDupKeyError, ToMapDupKeyError( toMapDupKeyError )
+
 0.0.8.0 2022-01-07
 ==================
 - export AsMapDupKeyError

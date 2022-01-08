@@ -1,3 +1,4 @@
+{-| Tools for working with `Map` / `HashMap` -}
 module ContainersPlus.Map
   ( AsRepeatedKeyError(..), RepeatedKeyError
   , fromList, __fromList, repeatedKeyError )
@@ -29,6 +30,7 @@ import Data.HashMap.Strict  ( HashMap )
 
 --------------------------------------------------------------------------------
 
+{-| error caused by repeated keys used to, e.g., create a `Map` -}
 data RepeatedKeyError α = RepeatedKeyError [α] CallStack
   deriving Show
 
@@ -54,11 +56,13 @@ instance Printable α ⇒ Printable (RepeatedKeyError α) where
 
 ----------
 
+{-| create a `RepeatedKeyError` -}
 repeatedKeyError ∷ HasCallStack ⇒ [α] → RepeatedKeyError α
 repeatedKeyError xs = RepeatedKeyError xs callStack
 
 ----------------------------------------
 
+{-| prismatic type class for `RepeatedKeyError` -}
 class AsRepeatedKeyError α ε where
   _RepeatedKeyError ∷ Prism' ε (RepeatedKeyError α)
 

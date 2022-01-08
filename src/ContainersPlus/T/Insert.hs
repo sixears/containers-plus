@@ -2,8 +2,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeFamilies      #-}
 
+{-| tests for `ContainersPlus.Insert` -}
 module ContainersPlus.T.Insert
-  ( _test, tests )
+  ( tests )
 where
 
 -- base --------------------------------
@@ -173,6 +174,7 @@ hashMapTests =
 
 ------------------------------------------------------------
 
+{-| unit tests -}
 tests ∷ TestTree
 tests =
   testGroup "Insert" [ listTests, setTests, mapTests

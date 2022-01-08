@@ -11,8 +11,9 @@ Description: utilities for working with Maps, with explicit (Monad)Errors
 
 module ContainersPlus.MapUtils
   ( AsMapDupKeyError(..), MapDupKeyError( MapDupKeyError )
+  , ToMapDupKeyError( toMapDupKeyError )
   , fromListWithDups, fromListDupsE, invertMap, invertMapS, mapFromList
-  , mergeMaps
+  , mergeMaps, throwAsMapDupKeyError
   )
 where
 
@@ -73,15 +74,47 @@ instance HasCallstack (MapDupKeyError κ ν) where
 
 ------------------------------------------------------------
 
-{- prismatic type class for `MapDupKeyError` -}
+{-| type that is convertable to a `MapDupKeyError` -}
+class ToMapDupKeyError κ ν α where
+  {-| convert to `MapDupKeyError` -}
+  toMapDupKeyError ∷ HasCallStack ⇒ α → MapDupKeyError κ ν
+
+--------------------
+
+instance ToMapDupKeyError κ ν (MapDupKeyError κ ν) where
+  toMapDupKeyError = id
+
+--------------------
+
+instance ToMapDupKeyError κ ν (Map κ (NonEmptyHashSet ν)) where
+  toMapDupKeyError = \ xs → MapDupKeyError xs callStack
+
+--------------------
+
+instance (Ord κ, Hashable ν, Eq ν) ⇒ ToMapDupKeyError κ ν [(κ,ν)] where
+  toMapDupKeyError = toMapDupKeyError ∘ mapFromList
+
+------------------------------------------------------------
+
+{-| prismatic type class for `MapDupKeyError` -}
 class AsMapDupKeyError κ ν ε where
+  {-| prism to `MapDupKeyError` -}
   _MapDupKeyError ∷ Prism' ε (MapDupKeyError κ ν)
 
 instance AsMapDupKeyError κ ν (MapDupKeyError κ ν) where
   _MapDupKeyError = id
 
+----------------------------------------
+
+{-| throw a `MapDupKeyError` as an `AsMapDupKeyError` -}
+throwAsMapDupKeyError ∷ (MonadError ε η, AsMapDupKeyError κ ν ε, HasCallStack) ⇒
+                        Map κ (NonEmptyHashSet ν) → η α
+throwAsMapDupKeyError m =
+  throwError $ _MapDupKeyError # MapDupKeyError m callStack
+
 ------------------------------------------------------------
 
+{-| convert a list of pairs to a map from keys to a set of values -}
 mapFromList ∷ (Ord κ, Hashable ν, Eq ν, IsList l, Item l ~ (κ,ν)) ⇒
               l → Map κ (NonEmptyHashSet ν)
 mapFromList kvs =

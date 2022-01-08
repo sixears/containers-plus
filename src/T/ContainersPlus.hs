@@ -1,3 +1,5 @@
+{-| Full collection of tests for `containers-plus` -}
+
 module T.ContainersPlus
   ( tests )
 where
@@ -28,6 +30,7 @@ import qualified  ContainersPlus.T.MapUtils  as  MapUtils
 
 --------------------------------------------------------------------------------
 
+{-| unit tests -}
 tests ∷ TestTree
 tests = testGroup "ContainersPlus" [ MapUtils.tests, Insert.tests ]
 

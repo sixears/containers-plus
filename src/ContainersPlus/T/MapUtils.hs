@@ -2,8 +2,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeFamilies      #-}
 
+{-| tests for `ContainersPlus.MapUtils` -}
 module ContainersPlus.T.MapUtils
-  ( _test, tests )
+  ( tests )
 where
 
 import Base1  hiding  ( fromList, toList )
@@ -205,6 +206,7 @@ mergeMapsTests =
 
 ------------------------------------------------------------
 
+{-| unit tests -}
 tests ∷ TestTree
 tests =
   testGroup "MapUtils" [ mapFromListTests, fromListWithDupsTests

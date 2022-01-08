@@ -42,6 +42,7 @@ import Data.HashSet  ( HashSet )
 
 --------------------------------------------------------------------------------
 
+{-| type class for datatypes with a notion of 'insertion' -}
 class HasInsert α where
   type InsertType α
   insert ∷ InsertType α → α → α
