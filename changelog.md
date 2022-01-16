@@ -1,3 +1,7 @@
+0.0.10.0 2022-01-16
+===================
+- use AsMapDupKeyError for fromListDupsE and derivatives
+
 0.0.9.0 2022-01-08
 ==================
 - add throwAsMapDupKeyError, ToMapDupKeyError( toMapDupKeyError )

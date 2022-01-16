@@ -187,10 +187,10 @@ invertMapSTests =
 
 mergeMapsTests ∷ TestTree
 mergeMapsTests =
-  let
+  let testThis ∷ 𝕊 → [[(𝕊,Int)]] → [(𝕊,Int)] → [TestTree]
       testThis name maps expect =
         assertListEqRS name
-                       (sortOn snd ∘ toList ⊳ mergeMaps (mapList ⊳ maps))
+                       (sortOn snd ∘ toList ⊳ mergeMaps @(MapDupKeyError 𝕊 Int) (mapList ⊳ maps))
                        expect
    in testGroup "mergeMaps" $
         concat [ testThis "noDups" [ simpleList, simpleList2 ]
@@ -199,7 +199,8 @@ mergeMapsTests =
                , [ testCase "dups" $
                          mergeMaps (mapList ⊳ [ simpleList, simpleList3 ])
                      @?= Left (MapDupKeyError
-                                 (mapList [("two", fromList (2 :| [4]))]) callStack)
+                                 (mapList [(("two"∷String), fromList ((2∷Int) :| [4]))])
+                                 callStack)
                  ]
                ]
 

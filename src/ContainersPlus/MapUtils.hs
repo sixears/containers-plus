@@ -1,7 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE LambdaCase       #-}
-{-# LANGUAGE TypeFamilies     #-}
-
 {- |
 
 Description: utilities for working with Maps, with explicit (Monad)Errors
@@ -141,13 +137,13 @@ fromListWithDups ls =
 --   the duplist
 
 fromListDupsE ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (κ,ν),
-                 MonadError (MapDupKeyError κ ν) m, HasCallStack) ⇒
+                 AsMapDupKeyError κ ν ε, MonadError ε m, HasCallStack) ⇒
                  l → m (Map κ ν)
 fromListDupsE ls =
   let (dups, res) = fromListWithDups ls
    in if null dups
       then return res
-      else throwError $ MapDupKeyError dups callStack
+      else throwAsMapDupKeyError dups
 
 ----------------------------------------
 
@@ -155,7 +151,7 @@ fromListDupsE ls =
 --   κ values are found
 
 invertMap ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (ν,κ),
-             MonadError (MapDupKeyError κ ν) m) ⇒
+             AsMapDupKeyError κ ν ε, MonadError ε m) ⇒
             l → m (Map κ ν)
 invertMap m = fromListDupsE (swap ⊳ IsList.toList m)
 
@@ -165,16 +161,17 @@ invertMap m = fromListDupsE (swap ⊳ IsList.toList m)
      `Map ν [κ] → Map κ ν`; throw an error if duplicate κ values are found -}
 
 invertMapS ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (ν,[κ]),
-              MonadError (MapDupKeyError κ ν) m) ⇒
+              AsMapDupKeyError κ ν ε, MonadError ε m) ⇒
              l → m (Map κ ν)
 invertMapS m = fromListDupsE $ [ (v,k) | (k,vs) ← IsList.toList m, v ← vs ]
 
 ----------------------------------------
 
 {- | merge a list of maps, throw if any key is duplicated -}
-mergeMaps ∷ (Ord κ, Eq ν, Hashable ν, MonadError (MapDupKeyError κ ν) η,
-             Foldable t, Functor t) ⇒
-            t (Map κ ν) → η (Map κ ν)
+mergeMaps ∷ ∀ ε κ ν τ η .
+            (Ord κ, Eq ν, Hashable ν, AsMapDupKeyError κ ν ε, MonadError ε η,
+             Foldable τ, Functor τ) ⇒
+            τ (Map κ ν) → η (Map κ ν)
 mergeMaps maps = fromListDupsE (concat $ IsList.toList ⊳ maps)
 
 -- that's all, folks! ---------------------------------------------------------
