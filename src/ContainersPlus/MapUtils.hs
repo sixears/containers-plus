@@ -127,7 +127,7 @@ fromListWithDups ∷ (Ord κ, Eq ν, Hashable ν, IsList l, Item l ~ (κ,ν)) �
                     l → (Map κ (NonEmptyHashSet ν), Map κ ν)
 fromListWithDups ls =
   let map = fromListWith (◇) (second pure ⊳ IsList.toList ls)
-   in mapEither ( \ case (v :| []) → 𝕽 v; vs → 𝕷 (NonEmptyHashSet.fromList vs) )
+   in mapEither (\ case (v :| []) → 𝕽 v; vs → 𝕷 (NonEmptyHashSet.fromList vs))
                 map
 
 ----------------------------------------

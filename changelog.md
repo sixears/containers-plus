@@ -1,3 +1,7 @@
+0.0.10.1 2022-04-07
+==================
+- upgrade dependencies
+
 0.0.10.0 2022-01-16
 ===================
 - use AsMapDupKeyError for fromListDupsE and derivatives
