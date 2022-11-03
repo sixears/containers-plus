@@ -12,7 +12,7 @@
     textual-plus.url         = "github:sixears/textual-plus/r1.0.2.8";
   };
 
-  outputs = { self, nixpkgs, flake-utils, build-utils
+  outputs = { self, nixpkgs, build-utils
             , base1, more-unicode, non-empty-containers, tasty-plus
             , textual-plus }:
     build-utils.lib.hOutputs self nixpkgs "containers-plus" {
