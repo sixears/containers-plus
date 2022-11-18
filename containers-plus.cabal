@@ -3,7 +3,7 @@ name:                containers-plus
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.0.10.21
+version:             0.0.10.22
 synopsis:            Additional Utilities for Working with Containers
 description:         Additional Utilities for Working with Containers
 cabal-version:       >= 1.10
