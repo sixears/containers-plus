@@ -7,7 +7,7 @@
 
     base1.url                = github:sixears/base1/r0.0.9.31;
     more-unicode.url         = github:sixears/more-unicode/r0.0.17.11;
-    non-empty-containers.url = github:sixears/non-empty-containers/r1.4.3.32;
+    non-empty-containers.url = github:sixears/non-empty-containers/r1.4.3.33;
     tasty-plus.url           = github:sixears/tasty-plus/r1.5.2.21;
     textual-plus.url         = github:sixears/textual-plus/r1.0.2.25;
   };
