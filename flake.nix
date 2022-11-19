@@ -2,7 +2,7 @@
   description = "Additional Utilities for Working with Containers";
 
   inputs = {
-    nixpkgs.url      = "github:nixos/nixpkgs/be44bf67"; # nixos-22.05 2022-10-15
+    nixpkgs.url      = github:nixos/nixpkgs/be44bf67; # nixos-22.05 2022-10-15
     build-utils.url  = github:sixears/flake-build-utils/r1.0.0.13;
 
     base1.url                = github:sixears/base1/r0.0.9.30;
@@ -20,5 +20,23 @@
         inherit base1 more-unicode non-empty-containers tasty-plus textual-plus;
       };
       ghc = p: p.ghc8107; # for tfmt
+      callPackage = { mkDerivation, lib, mapPkg, system
+                    , base, base-unicode-symbols, containers, hashable, lens
+                    , mono-traversable, tasty, tasty-hunit, text-printer
+                    , unordered-containers}:
+        mkDerivation {
+          pname = "containers-plus";
+          version = "0.0.10.34";
+          src = ./.;
+          libraryHaskellDepends = [
+            base base-unicode-symbols containers hashable lens mono-traversable
+            tasty tasty-hunit text-printer unordered-containers
+          ] ++ mapPkg [
+            base1 more-unicode non-empty-containers tasty-plus textual-plus
+          ];
+          testHaskellDepends = [ base tasty ];
+          description = "Additional Utilities for Working with Containers";
+          license = lib.licenses.mit;
+        };
     };
 }
