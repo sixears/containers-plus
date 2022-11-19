@@ -5,10 +5,10 @@
     nixpkgs.url      = github:nixos/nixpkgs/be44bf67; # nixos-22.05 2022-10-15
     build-utils.url  = github:sixears/flake-build-utils/r1.0.0.13;
 
-    base1.url                = github:sixears/base1/r0.0.9.31;
+    base1.url                = github:sixears/base1/r0.0.9.32;
     more-unicode.url         = github:sixears/more-unicode/r0.0.17.11;
-    non-empty-containers.url = github:sixears/non-empty-containers/r1.4.3.33;
-    tasty-plus.url           = github:sixears/tasty-plus/r1.5.2.21;
+    non-empty-containers.url = github:sixears/non-empty-containers/r1.4.3.34;
+    tasty-plus.url           = github:sixears/tasty-plus/r1.5.2.22;
     textual-plus.url         = github:sixears/textual-plus/r1.0.2.25;
   };
 
@@ -26,7 +26,7 @@
                     , unordered-containers}:
         mkDerivation {
           pname = "containers-plus";
-          version = "0.0.10.34";
+          version = "0.0.10.37";
           src = ./.;
           libraryHaskellDepends = [
             base base-unicode-symbols containers hashable lens mono-traversable
