@@ -295,16 +295,16 @@
         "tfmt": "tfmt"
       },
       "locked": {
-        "lastModified": 1668840476,
-        "narHash": "sha256-Sc0DyVfnuUu37F6QRX6J2syYREFpylFvGQRBTXBBoM8=",
+        "lastModified": 1668851450,
+        "narHash": "sha256-w0UOBz3CJL5MsJOh7tRGc+fkkUqeOqESygR/Yp6n5bE=",
         "owner": "sixears",
         "repo": "base1",
-        "rev": "5cbb3deaf9bffb0839db09eabd7f71e7205e341c",
+        "rev": "f9aa2562d235b8433a23d162263f75681ddf6736",
         "type": "github"
       },
       "original": {
         "owner": "sixears",
-        "ref": "r0.0.9.30",
+        "ref": "r0.0.9.31",
         "repo": "base1",
         "type": "github"
       }
@@ -321,16 +321,16 @@
         "tfmt": "tfmt_2"
       },
       "locked": {
-        "lastModified": 1668840476,
-        "narHash": "sha256-Sc0DyVfnuUu37F6QRX6J2syYREFpylFvGQRBTXBBoM8=",
+        "lastModified": 1668851450,
+        "narHash": "sha256-w0UOBz3CJL5MsJOh7tRGc+fkkUqeOqESygR/Yp6n5bE=",
         "owner": "sixears",
         "repo": "base1",
-        "rev": "5cbb3deaf9bffb0839db09eabd7f71e7205e341c",
+        "rev": "f9aa2562d235b8433a23d162263f75681ddf6736",
         "type": "github"
       },
       "original": {
         "owner": "sixears",
-        "ref": "r0.0.9.30",
+        "ref": "r0.0.9.31",
         "repo": "base1",
         "type": "github"
       }
@@ -2355,13 +2355,17 @@
       },
       "locked": {
         "lastModified": 1668837656,
-        "narHash": "sha256-8P0LVjjQ2ZN4PDp78o9n0H2tqPF/PY0SvsCvX17hGIk=",
-        "path": "/home/martyn/src/flake-build-utils",
-        "type": "path"
+        "narHash": "sha256-8OwroK3C07H/oljnuUugJYbvE4RAH1FEoag58SwJBiM=",
+        "owner": "sixears",
+        "repo": "flake-build-utils",
+        "rev": "8eb022aad614f12049f552724f6cfc78f0775576",
+        "type": "github"
       },
       "original": {
-        "path": "/home/martyn/src/flake-build-utils",
-        "type": "path"
+        "owner": "sixears",
+        "ref": "r1.0.0.13",
+        "repo": "flake-build-utils",
+        "type": "github"
       }
     },
     "build-utils_84": {
@@ -5101,16 +5105,16 @@
         "tasty-plus": "tasty-plus"
       },
       "locked": {
-        "lastModified": 1668839954,
-        "narHash": "sha256-QtLi1kw083olMz8luQZZ4W0t8egKAK6bsBBUGGVmpBA=",
+        "lastModified": 1668851413,
+        "narHash": "sha256-afEiwvJdaqGBJ3fFssgkBSUsdh3O7bnqdBO0vSl8lwo=",
         "owner": "sixears",
         "repo": "index",
-        "rev": "d60586a1a3584209b8895897a44fd88eea687098",
+        "rev": "7c812b88bf2b89b9750f52fb60156a399acde908",
         "type": "github"
       },
       "original": {
         "owner": "sixears",
-        "ref": "r1.0.1.22",
+        "ref": "r1.0.1.23",
         "repo": "index",
         "type": "github"
       }
@@ -5123,16 +5127,16 @@
         "tasty-plus": "tasty-plus_2"
       },
       "locked": {
-        "lastModified": 1668839954,
-        "narHash": "sha256-QtLi1kw083olMz8luQZZ4W0t8egKAK6bsBBUGGVmpBA=",
+        "lastModified": 1668851413,
+        "narHash": "sha256-afEiwvJdaqGBJ3fFssgkBSUsdh3O7bnqdBO0vSl8lwo=",
         "owner": "sixears",
         "repo": "index",
-        "rev": "d60586a1a3584209b8895897a44fd88eea687098",
+        "rev": "7c812b88bf2b89b9750f52fb60156a399acde908",
         "type": "github"
       },
       "original": {
         "owner": "sixears",
-        "ref": "r1.0.1.22",
+        "ref": "r1.0.1.23",
         "repo": "index",
         "type": "github"
       }
@@ -8643,16 +8647,16 @@
         "tasty-plus": "tasty-plus_3"
       },
       "locked": {
-        "lastModified": 1668840446,
-        "narHash": "sha256-i9a5GWDIFleDGu2QW8TFbsiYzBzN9ej7pRVpCpa509k=",
+        "lastModified": 1668851950,
+        "narHash": "sha256-h+1X6SSBWl4dgbnQPhoGkhjF+4XEnGGrW81EZid3gNE=",
         "owner": "sixears",
         "repo": "non-empty-containers",
-        "rev": "e26284390c2398ed1fc2f331524ec299ebc6ebc8",
+        "rev": "5f3156b03bee60a4185facbe4a78206904d69a23",
         "type": "github"
       },
       "original": {
         "owner": "sixears",
-        "ref": "r1.4.3.31",
+        "ref": "r1.4.3.33",
         "repo": "non-empty-containers",
         "type": "github"
       }
